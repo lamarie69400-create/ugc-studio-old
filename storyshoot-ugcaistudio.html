@@ -268,7 +268,10 @@ select.field option{background:var(--plum-700)}
     </div>
     <div class="splash-tagline">UGC AI Studio — StoryShoot</div>
     <div class="splash-label">Ton code d'accès</div>
-    <input type="text" id="code-input" class="splash-input" placeholder="Entre ton code..." autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="10"/>
+    <div style="position:relative">
+      <input type="password" id="code-input" class="splash-input" style="padding-right:48px" placeholder="Entre ton code..." autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="10"/>
+      <button type="button" id="code-eye" onclick="toggleCodeVisible()" aria-label="Afficher ou masquer le code" title="Afficher / masquer" style="position:absolute;right:14px;top:calc(50% - 4px);transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:17px;line-height:1">👁</button>
+    </div>
     <div class="splash-error" id="splash-error"></div>
     <button class="btn-primary" onclick="handleLogin()">Accéder à StoryShoot</button>
     <div class="splash-footer">Accès réservé aux membres UGC AI Studio</div>
@@ -1231,7 +1234,15 @@ function handleLogin(){
   const inp=document.getElementById('code-input');const err=document.getElementById('splash-error');
   if(!raw){inp.classList.add('error');err.textContent='Entre ton code.';setTimeout(()=>inp.classList.remove('error'),500);return;}
   if(!CODES[raw]){inp.classList.add('error');err.textContent='Code invalide.';setTimeout(()=>inp.classList.remove('error'),500);return;}
+  inp.value='';inp.type='password';
   currentCode=raw;currentUser=CODES[raw];launchApp();
+}
+function toggleCodeVisible(){
+  const i=document.getElementById('code-input');
+  const show=i.type==='password';
+  i.type=show?'text':'password';
+  document.getElementById('code-eye').textContent=show?'🙈':'👁';
+  i.focus();
 }
 function launchApp(){
   sessionStorage.setItem('ss_session',currentCode);

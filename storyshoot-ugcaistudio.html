@@ -111,6 +111,9 @@ select.field option{background:var(--plum-700)}
 .upload-remove{position:absolute;top:6px;right:6px;z-index:5;width:26px;height:26px;border-radius:50%;background:rgba(14,8,18,0.88);border:1px solid rgba(255,255,255,0.4);color:#fff;font-size:12px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
 .upload-remove:hover{background:var(--rose-400);border-color:var(--rose-400)}
 
+.duo-only{display:none !important}
+body.duo .duo-only{display:flex !important}
+
 /* FORMAT CHIPS */
 .format-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
 .format-chip{padding:12px 14px;background:rgba(255,255,255,0.03);border:1.5px solid rgba(124,58,237,0.18);border-radius:var(--radius-md);cursor:pointer;transition:all 0.15s}
@@ -333,7 +336,11 @@ select.field option{background:var(--plum-700)}
       <div class="card"><div class="format-grid" id="intro-sources"></div></div>
     </div>
     <div class="section">
-      <div class="section-header"><div class="section-num">2</div><div class="section-title">Comment tu veux travailler ?</div></div>
+      <div class="section-header"><div class="section-num">2</div><div class="section-title">Une personne ou un duo ?</div></div>
+      <div class="card"><div class="format-grid" id="intro-people"></div></div>
+    </div>
+    <div class="section">
+      <div class="section-header"><div class="section-num">3</div><div class="section-title">Comment tu veux travailler ?</div></div>
       <div class="card"><div class="format-grid" id="intro-modes"></div></div>
     </div>
     <div style="display:flex;justify-content:flex-end;margin-top:8px">
@@ -347,17 +354,21 @@ select.field option{background:var(--plum-700)}
     <div class="app-hero">
       <div class="hero-eyebrow">⚡ Création rapide</div>
       <h1 class="hero-title">Une scène, <em>un clic</em></h1>
-      <p class="hero-sub">Charge ton avatar et ton produit, choisis ton type de contenu et ton plan : l'image se génère.</p>
+      <p class="hero-sub">Charge ton avatar et ton produit, choisis ton plan : l'image se génère.</p>
     </div>
 
     <div class="section">
       <div class="section-header"><div class="section-num">A</div><div class="section-title">Tes visuels</div></div>
       <div class="section-desc">Avatar et produit obligatoires. Pour le produit : photo nette, de face, étiquette lisible.</div>
       <div class="card">
-        <div class="upload-grid" style="grid-template-columns:repeat(3,1fr)">
+        <div class="upload-grid" style="grid-template-columns:repeat(auto-fit,minmax(130px,1fr))">
           <div class="upload-zone" id="qzone-avatar">
             <input type="file" id="q-avatar-file" accept="image/*" onchange="handleUpload('avatar',this)">
             <div class="upload-icon">👤</div><div class="upload-label">Avatar IA</div><div class="upload-hint">Obligatoire</div>
+          </div>
+          <div class="upload-zone duo-only" id="qzone-avatar2">
+            <input type="file" id="q-avatar2-file" accept="image/*" onchange="handleUpload('avatar2',this)">
+            <div class="upload-icon">👥</div><div class="upload-label">Personne 2</div><div class="upload-hint">Obligatoire en duo</div>
           </div>
           <div class="upload-zone" id="qzone-produit">
             <input type="file" id="q-produit-file" accept="image/*" onchange="handleUpload('produit',this)">
@@ -366,6 +377,10 @@ select.field option{background:var(--plum-700)}
           <div class="upload-zone" id="qzone-vetement">
             <input type="file" id="q-vetement-file" accept="image/*" onchange="handleUpload('vetement',this)">
             <div class="upload-icon">👗</div><div class="upload-label">Tenue</div><div class="upload-hint">Optionnel</div>
+          </div>
+          <div class="upload-zone duo-only" id="qzone-vetement2">
+            <input type="file" id="q-vetement2-file" accept="image/*" onchange="handleUpload('vetement2',this)">
+            <div class="upload-icon">👗</div><div class="upload-label">Tenue 2</div><div class="upload-hint">Optionnel</div>
           </div>
         </div>
       </div>
@@ -380,31 +395,41 @@ select.field option{background:var(--plum-700)}
     </div>
 
     <div class="section">
-      <div class="section-header"><div class="section-num">B</div><div class="section-title">Type de contenu</div></div>
-      <div class="card"><div class="format-grid" id="q-types"></div></div>
-    </div>
-
-    <div class="section">
-      <div class="section-header"><div class="section-num">C</div><div class="section-title">Plan produit</div></div>
+      <div class="section-header"><div class="section-num">B</div><div class="section-title">Plan produit</div></div>
       <div class="card"><div class="format-grid" id="q-plans"></div></div>
     </div>
 
     <div class="section">
-      <div class="section-header"><div class="section-num">D</div><div class="section-title">Précisions <span class="badge-optional">Optionnel</span></div></div>
+      <div class="section-header"><div class="section-num">C</div><div class="section-title">Précisions <span class="badge-optional">Optionnel</span></div></div>
       <div class="card">
         <div class="field-group">
           <label class="field-label">Lieu</label>
-          <select class="field" id="q-lieu">
+          <select class="field" id="q-lieu" onchange="onLieuChange()">
             <option value="">Automatique</option>
             <option value="bedroom">Chambre</option>
+            <option value="living">Salon</option>
+            <option value="kitchen">Cuisine</option>
             <option value="bathroom">Salle de bain</option>
-            <option value="car">Voiture</option>
+            <option value="toilet">Toilettes</option>
+            <option value="dining">Salle à manger</option>
             <option value="outdoors">Extérieur</option>
+            <option value="car">Voiture</option>
+            <option value="restaurant">Restaurant</option>
+          </select>
+        </div>
+        <div class="field-group" id="q-resto-block" style="display:none">
+          <label class="field-label">Moment au restaurant</label>
+          <select class="field" id="q-resto">
+            <option value="eat">Elle mange (fourchette vers la bouche)</option>
+            <option value="cut">Elle découpe son plat (gros plan du geste)</option>
+            <option value="photo">Elle prend son plat en photo (POV · on ne voit pas son visage)</option>
+            <option value="react">Elle goûte et réagit</option>
+            <option value="drink">Elle boit ou trinque (verre avec condensation)</option>
           </select>
         </div>
         <div class="field-group" style="margin-bottom:0">
-          <label class="field-label">Précision</label>
-          <textarea class="field" id="q-precision" style="min-height:70px" placeholder="Ex : elle tient le produit devant le miroir, sourire discret"></textarea>
+          <label class="field-label">Direction de scène</label>
+          <textarea class="field" id="q-precision" style="min-height:70px" placeholder="Ex : elle tient le produit devant le miroir, sourire discret. Au restaurant : ce qu'elle mange, ce qui se passe. Pour changer sa tenue, précise-le ici (ex : en pyjama)."></textarea>
         </div>
       </div>
     </div>
@@ -455,12 +480,18 @@ select.field option{background:var(--plum-700)}
         <div class="section-header"><div class="section-num">A</div><div class="section-title">Visuels de référence</div></div>
         <div class="section-desc">Avatar IA, produit, tenue, décor. Ces images servent à verrouiller l'identité et le produit dans toutes les générations. Pour le produit : photo nette, de face, étiquette bien lisible.</div>
         <div class="card">
-          <div class="upload-grid">
+          <div class="upload-grid" style="grid-template-columns:repeat(auto-fit,minmax(130px,1fr))">
             <div class="upload-zone" id="zone-avatar">
               <input type="file" id="avatar-file" accept="image/*" onchange="handleUpload('avatar',this)">
               <div class="upload-icon">👤</div>
               <div class="upload-label">Avatar IA</div>
               <div class="upload-hint">Photo référence · clique pour changer</div>
+            </div>
+            <div class="upload-zone duo-only" id="zone-avatar2">
+              <input type="file" id="avatar2-file" accept="image/*" onchange="handleUpload('avatar2',this)">
+              <div class="upload-icon">👥</div>
+              <div class="upload-label">Personne 2</div>
+              <div class="upload-hint">Obligatoire en duo</div>
             </div>
             <div class="upload-zone" id="zone-produit">
               <input type="file" id="produit-file" accept="image/*" onchange="handleUpload('produit',this)">
@@ -472,6 +503,12 @@ select.field option{background:var(--plum-700)}
               <input type="file" id="vetement-file" accept="image/*" onchange="handleUpload('vetement',this)">
               <div class="upload-icon">👗</div>
               <div class="upload-label">Tenue</div>
+              <div class="upload-hint">Optionnel</div>
+            </div>
+            <div class="upload-zone duo-only" id="zone-vetement2">
+              <input type="file" id="vetement2-file" accept="image/*" onchange="handleUpload('vetement2',this)">
+              <div class="upload-icon">👗</div>
+              <div class="upload-label">Tenue 2</div>
               <div class="upload-hint">Optionnel</div>
             </div>
 
@@ -829,7 +866,7 @@ const VERTEX_KEY = 'AQ.Ab8RN6Jm1Snd7JLIK9rB3jBn1yF-nQ9RdplZOI1F9OuK3gRLxA';
 // ÉTAT GLOBAL
 // ═══════════════════════════════════════════════════
 let currentUser = null, currentCode = null, currentStep = 0;
-let uploads = { avatar:null, produit:null, decor:null, vetement:null };
+let uploads = { avatar:null, avatar2:null, produit:null, decor:null, vetement:null, vetement2:null };
 let decorMode = 'ia';
 let selectedFormat = null;
 let selectedPlans = [];
@@ -842,7 +879,8 @@ let storyboardData = null;
 let brollData = null;
 let modalCallback = null;
 let appMode = 'rapide', imageSource = 'gratuit';
-let rapideType = null, rapidePlan = null;
+let rapidePlan = null;
+let duoMode = false;
 let pendingAfterKey = null;
 
 // Description exacte du produit (texte de l'emballage, couleurs, forme) extraite de la photo de référence
@@ -1013,18 +1051,7 @@ const INTRO_TEXT={
 };
 // ▲▲ ─────────────────────────────────────────── ▲▲
 
-const TYPE_DEFS={
-  organique:{
-    label:'🌱 Organique',
-    desc:'Créer de la proximité, de l\'identification, de l\'engagement naturel.',
-    block:'CONTENT TYPE: ORGANIC UGC. Goal: create closeness, identification and natural engagement. Feeling matters more than the product. VISUAL DIRECTION: spontaneous, unscripted style; natural expression, not exaggerated; visible imperfections (lighting, framing); real environment (bedroom, bathroom, car, outdoors); slightly unstable or off-center framing; strong human interaction (face, gestures, gaze). PRODUCT: naturally integrated, never pushed aggressively. EMOTION: subtle, authentic, felt not acted. FORBIDDEN: advertising look, too clean or too perfect, frozen pose.'
-  },
-  ads:{
-    label:'📣 Ads',
-    desc:'Créer du désir, projeter un mode de vie, inspirer.',
-    block:'CONTENT TYPE: ADS. Goal: create desire, project a lifestyle, inspire. VISUAL DIRECTION: polished but natural aesthetic; realistic life scene (a daily moment); harmonious visual composition; captured movement or moment (not frozen); soft pleasant light. PRODUCT: integrated in a moment of life, part of the scene, subtle presence. FORBIDDEN: product too prominent, advertising pose, forced expression, overly commercial render.'
-  },
-};
+const QUICK_STYLE='STYLE: authentic UGC photo, natural and unscripted; a realistic everyday scene; natural expression, not exaggerated; soft natural light; the product naturally integrated, never an advertising render. FORBIDDEN: studio or advertising look, frozen pose, overly perfect or plastic rendering.';
 
 // legible : true = étiquette bien lisible · 'soft' = lisible autant que le cadrage le permet · false = pas garanti
 const PLANS_PRODUIT=[
@@ -1047,6 +1074,58 @@ const PLANS_PRODUIT=[
   {id:17,emoji:'🔳',name:'Plan cadre dans cadre',usage:'composition forte',legible:'soft',en:'FRAME-IN-FRAME: the product framed by a mirror, a door or an object'},
 ];
 
+// ═══════════════════════════════════════════════════
+// LIEUX · RESTAURANT · MODE DUO
+// ═══════════════════════════════════════════════════
+const LIEUX={
+  bedroom:'a real bedroom',
+  living:'a real, lived-in living room',
+  kitchen:'a real home kitchen',
+  bathroom:'a real bathroom',
+  toilet:'a real home toilet room (WC)',
+  dining:'a real dining room',
+  outdoors:'a real outdoor setting',
+  car:'inside a real car',
+  restaurant:'an everyday casual restaurant'
+};
+const RESTO_BASE=`RESTAURANT REALISM — an everyday, casual restaurant (brasserie or neighborhood restaurant), NOT luxury: no fine dining, no luxury styling, no candles or chandeliers, no staged food-photography look. The dishes look like real dishes served in a real restaurant: slightly uneven plating, sauce marks, steam, real textures, realistic portions, ordinary tableware. The table has natural imperfections: a few crumbs, small drops, a used napkin, bread, a carafe of water, cutlery. Glasses show realistic condensation and water droplets. Ordinary guests in the background, slightly out of focus. Hands and cutlery are anatomically correct: five natural fingers per hand, a believable grip on fork and knife, every hand attached to its arm and body, correct proportions. Nobody photographing her is visible: no extra hands, no photographer, no reflection of a camera operator. The MOMENT defines the camera viewpoint; the SHOT TYPE defines how tight the framing is.`;
+const RESTO_MOMENTS={
+  eat:`MOMENT: she is eating. A close, precise view of the gesture: a fork in one hand (and a knife in the other if she is cutting), a forkful of real food on its way to her mouth or just entering it. Natural, focused expression of someone eating, not posed.`,
+  cut:`MOMENT: she is cutting her dish. A very close view of the gesture: the knife in one hand and the fork in the other, a piece of food being cut or picked up, visible food texture. Her hands and the plate are the focus; her face may be partly visible behind.`,
+  photo:`MOMENT: she is taking a photo of her dish. FIRST-PERSON POV: the camera is her own eyes. We see her own hand and forearm entering the frame from the bottom of the image, connected to her body (her sleeve matches her outfit), holding an iPhone 17 Pro Max in front of the plate that sits right in front of her; the phone screen shows the camera app framing the dish. Her face is not visible. The hand is never detached from her body.`,
+  react:`MOMENT: she has just taken a bite and reacts naturally — a genuine, subtle reaction (surprise, pleasure, appreciation), still chewing or just swallowing, fork still in hand. Not exaggerated, not forced.`,
+  drink:`MOMENT: she is drinking or raising her glass. The glass shows realistic condensation and droplets, a real drink, a natural and relaxed gesture.`
+};
+const DUO_IDENTITY='IDENTITY LOCKED — two different people. PERSON 1 matches the first person reference photo and PERSON 2 matches the second person reference photo: same faces, skin tones and facial features. Never merge, blend, swap or duplicate the two faces. If a mirror is present, the reflections must match both people exactly.';
+const DUO_BLOCK=`DUO SCENE: two real people with a natural complicity and connection, like friends or partners creating content together. They do not need to make the same gestures. The connection is felt through proximity, shared attention, small natural interactions, eye contact and relaxed body language — NEVER forced laughter, fake exaggerated smiles or staged posing. The mood and the interaction follow the DIRECTION. Both people are fully present in the frame as far as the shot type allows, each clearly recognizable.`;
+const DUO_SB=`MODE DUO — DEUX PERSONNES (photo avatar 1 = Personne 1, photo avatar 2 = Personne 2) :
+- Chaque scene montre les DEUX personnes ensemble (sauf gros plan produit, mains ou detail).
+- Elles sont complices : on sent la connexion par la proximite, l'attention partagee, les petits gestes naturels, le regard. Elles n'ont PAS a faire les memes gestes. JAMAIS de faux rire force ni de poses mises en scene.
+- L'ambiance et l'interaction suivent le script et la direction de scene.
+- Dans description et prompt_image, ecris "person 1" et "person 2" (jamais de prenoms) et dis ce que fait chacune.`;
+const DUO_BR=`MODE DUO : deux personnes complices (Personne 1 et Personne 2). Les B-rolls montrent les deux ensemble quand c'est possible (sauf details produit ou mains). Complicite naturelle, jamais de rire force. Ecris "person 1" et "person 2" dans prompt_image.`;
+
+function duoActive(){ return duoMode&&!!uploads.avatar2; }
+function applyDuoUI(){
+  document.body.classList.toggle('duo',duoMode);
+  const setT=(sel,txt)=>document.querySelectorAll(sel).forEach(e=>e.textContent=txt);
+  setT('#zone-avatar .upload-label, #qzone-avatar .upload-label',duoMode?'Personne 1':'Avatar IA');
+  setT('#zone-vetement .upload-label, #qzone-vetement .upload-label',duoMode?'Tenue 1':'Tenue');
+}
+function pickPeople(v){ duoMode=(v==='duo'); renderIntro(); applyDuoUI(); }
+function onLieuChange(){
+  const v=document.getElementById('q-lieu').value;
+  const b=document.getElementById('q-resto-block');
+  if(b)b.style.display=(v==='restaurant')?'block':'none';
+}
+// Le proxy doit être à jour pour accepter 2 personnes (images gratuites)
+let _duoOk=false;
+async function proxySupportsDuo(){
+  if(_duoOk)return true;
+  try{ const r=await fetch(PROXY_URL+'/'); const j=await r.json(); if(j&&j.duo)_duoOk=true; }catch(e){}
+  return _duoOk;
+}
+
 function showScreen(name){
   const set=(id,on)=>{const e=document.getElementById(id);if(e)e.style.display=on?'block':'none';};
   set('intro',name==='intro');
@@ -1066,8 +1145,11 @@ function renderIntro(){
   set('intro-sources',e=>e.innerHTML=
     chip(imageSource==='gratuit',"pickSource('gratuit')",'Utiliser mes 10 images gratuites','10 images par jour, remises à zéro chaque nuit à minuit (heure de Paris). Les textes ne sont pas comptés.')+
     chip(imageSource==='cle',"pickSource('cle')",'Utiliser ma clé KIE','Pas de limite journalière. Facturé sur ton crédit KIE.'));
+  set('intro-people',e=>e.innerHTML=
+    chip(!duoMode,"pickPeople('solo')",'👤 Une personne','Un seul avatar.')+
+    chip(duoMode,"pickPeople('duo')",'👥 Duo','Deux personnes complices : deux avatars et deux tenues en option, pour du contenu à deux.'));
   set('intro-modes',e=>e.innerHTML=
-    chip(appMode==='rapide',"pickMode('rapide')",'⚡ Création rapide','Ton avatar, ton produit, un type de contenu et un plan : l\'image se génère en un clic.')+
+    chip(appMode==='rapide',"pickMode('rapide')",'⚡ Création rapide','Ton avatar, ton produit et un plan : l\'image se génère en un clic.')+
     chip(appMode==='complet',"pickMode('complet')",'🧭 Parcours complet','De ta marque au profil client, au script, au storyboard et aux B-rolls.'));
 }
 function pickSource(v){ imageSource=v; renderIntro(); }
@@ -1085,26 +1167,19 @@ function commencer(){
 }
 
 function renderQuick(){
-  const t=document.getElementById('q-types');
   const p=document.getElementById('q-plans');
-  if(t)t.innerHTML=Object.entries(TYPE_DEFS).map(([id,d])=>`
-    <div class="format-chip ${rapideType===id?'selected':''}" onclick="selectQuickType('${id}')">
-      <div class="format-chip-name">${d.label}</div>
-      <div class="format-chip-desc">${d.desc}</div>
-    </div>`).join('');
   if(p)p.innerHTML=PLANS_PRODUIT.map(pl=>`
     <div class="format-chip ${rapidePlan===pl.id?'selected':''}" onclick="selectQuickPlan(${pl.id})">
       <div class="format-chip-name">${pl.emoji} ${pl.name}</div>
       <div class="format-chip-desc">${pl.usage}${pl.risque?' · <span style="color:var(--rose-300)">étiquette pas toujours lisible</span>':''}</div>
     </div>`).join('');
 }
-function selectQuickType(id){ rapideType=id; renderQuick(); }
 function selectQuickPlan(id){ rapidePlan=id; renderQuick(); }
 
 async function genererRapide(){
   if(!uploads.avatar){showToast('Charge ton avatar d\'abord 👤');return;}
   if(!uploads.produit){showToast('Charge ton produit d\'abord 📦');return;}
-  if(!rapideType){showToast('Choisis un type de contenu');return;}
+  if(duoMode&&!uploads.avatar2){showToast('Mode duo : charge la personne 2 👥');return;}
   if(!rapidePlan){showToast('Choisis un plan produit');return;}
   if(!canGenerate(currentCode)){openKeyModal('Tes 10 images du jour sont épuisées.');return;}
   const btn=document.getElementById('q-gen-btn');
@@ -1112,23 +1187,26 @@ async function genererRapide(){
   btn.disabled=true;lab.textContent='Génération en cours...';
   try{
     await ensureProductDesc();
-    const type=TYPE_DEFS[rapideType];
     const plan=PLANS_PRODUIT.find(x=>x.id===rapidePlan);
     const lieuVal=document.getElementById('q-lieu').value;
     const precision=(document.getElementById('q-precision').value||'').trim();
-    const lieuTxt={bedroom:'a real bedroom',bathroom:'a real bathroom',car:'inside a real car',outdoors:'a real outdoor setting'}[lieuVal]||'a real, believable everyday location';
+    const lieuTxt=LIEUX[lieuVal]||'a real, believable everyday location';
+    const restoVal=document.getElementById('q-resto')?.value||'eat';
+    const restoBlock=(lieuVal==='restaurant')?(RESTO_BASE+' '+(RESTO_MOMENTS[restoVal]||RESTO_MOMENTS.eat)):'';
     const prodBlock=buildProductDirective('',plan.legible);
-    const locks=['IDENTITY LOCKED — same face, skin tone and facial features as the reference photo. Do not invent a new face. If a mirror is present, the reflection must match the person exactly.'];
-    if(uploads.vetement)locks.push('OUTFIT LOCKED — same garment as the outfit reference.');
+    const locks=[duoActive()?DUO_IDENTITY:'IDENTITY LOCKED — same face, skin tone and facial features as the reference photo. Do not invent a new face. If a mirror is present, the reflection must match the person exactly.'];
+    if(duoActive())locks.push(DUO_BLOCK);
+    {const ol=buildOutfitLock('',precision);if(ol)locks.push(ol);}
     const quality=(plan.id===14||plan.id===15)?QUALITY_SUFFIX.replace(' no blur,',''):QUALITY_SUFFIX;
-    const prompt=prodBlock+' SCENE: a single photo of the person from the reference image with the product from the reference image. '+
+    const prompt=prodBlock+(duoActive()?' SCENE: a single photo of the two people from the reference images (person 1 and person 2) together with the product from the reference image. ':' SCENE: a single photo of the person from the reference image with the product from the reference image. ')+
       'SHOT TYPE (takes priority over any framing instruction below): '+plan.en+'. '+
       'LOCATION: '+lieuTxt+'. '+
+      (restoBlock?restoBlock+' ':'')+
       (precision?'DIRECTION: '+precision+'. ':'')+
-      type.block+' '+
-      'The person appears as far as the shot type allows (face, hands or body); for very tight shots only hands or skin may be visible. '+
+      QUICK_STYLE+' '+
+      (duoActive()?'Both people appear as far as the shot type allows (faces, hands or bodies). ':'The person appears as far as the shot type allows (face, hands or body); for very tight shots only hands or skin may be visible. ')+
       locks.join(' ')+
-      ' Portrait orientation 9:16, shot on iPhone 15 Pro, natural light, authentic UGC look. '+quality+' NO studio look. NO plants. NO inconsistent mirror reflections.';
+      ' Portrait orientation 9:16, shot on iPhone 17 Pro Max, natural light, authentic UGC look. '+quality+' NO studio look. NO plants. NO inconsistent mirror reflections.';
     const ownKey=keyForThisImage();
     const imgData=await generateImage(prompt,true,null,'image/jpeg',true,ownKey);
     if(!CODES[currentCode]?.admin&&!ownKey){incrementUsed(currentCode);updateQuotaUI();}
@@ -1185,9 +1263,11 @@ async function kieToDataUrl(url){
 async function generateWithKie(prompt,opt){
   const key=opt.userKey;
   const refs=[];
-  if(opt.useAvatar&&uploads.avatar)refs.push({role:'person',b64:uploads.avatar.b64,mime:uploads.avatar.mime,txt:'the PERSON to reproduce — lock face, skin tone and facial features'});
+  if(opt.useAvatar&&uploads.avatar)refs.push({role:'person',b64:uploads.avatar.b64,mime:uploads.avatar.mime,txt:(duoActive()?'PERSON 1 — ':'')+(uploads.vetement?'the PERSON to reproduce — lock face, skin tone and facial features':'the PERSON to reproduce — lock face, skin tone, facial features AND the exact clothes worn')});
+  if(opt.useAvatar&&duoActive()&&uploads.avatar2)refs.push({role:'person2',b64:uploads.avatar2.b64,mime:uploads.avatar2.mime,txt:'PERSON 2 (a different person from person 1) — lock face, skin tone and facial features'+(uploads.vetement2?'':' AND the exact clothes worn')});
   if(opt.useProduit&&uploads.produit)refs.push({role:'product',b64:uploads.produit.b64,mime:uploads.produit.mime,txt:'the exact PRODUCT — same shape, colors, logo and ALL label text spelled exactly as in this photo, sharp and legible'});
-  if(uploads.vetement)refs.push({role:'outfit',b64:uploads.vetement.b64,mime:uploads.vetement.mime,txt:'the OUTFIT the person must wear exactly'});
+  if(uploads.vetement)refs.push({role:'outfit',b64:uploads.vetement.b64,mime:uploads.vetement.mime,txt:(duoActive()?'the OUTFIT that PERSON 1 must wear exactly':'the OUTFIT the person must wear exactly')});
+  if(duoActive()&&uploads.vetement2)refs.push({role:'outfit2',b64:uploads.vetement2.b64,mime:uploads.vetement2.mime,txt:'the OUTFIT that PERSON 2 must wear exactly'});
   if(opt.lieuB64)refs.push({role:'decor',b64:opt.lieuB64,mime:opt.lieuMime,txt:'the DECOR — reproduce this exact environment faithfully'});
   showToast('Génération avec ta clé KIE… environ 1 minute');
   const urls=await Promise.all(refs.map(r=>kieUpload(r,key)));
@@ -1251,7 +1331,7 @@ function launchApp(){
   updateQuotaUI();
   renderFormats();
   renderCaptureMoteur();
-  renderIntro();renderQuick();showScreen('intro');
+  renderIntro();renderQuick();applyDuoUI();showScreen('intro');
   showToast('Bienvenue '+currentUser.name+' ! 🎬');
 }
 document.getElementById('code-input').addEventListener('keydown',e=>{if(e.key==='Enter')handleLogin();});
@@ -1338,7 +1418,7 @@ function getMaxReachableStep(){
 // ═══════════════════════════════════════════════════
 // Limites de redimensionnement (côté le plus long, qualité JPEG).
 // Le produit garde une résolution élevée pour que le texte de l'emballage reste lisible.
-const IMG_LIMITS = { avatar:[1536,0.92], produit:[2048,0.95], vetement:[1536,0.9], decor:[1280,0.88] };
+const IMG_LIMITS = { avatar:[1536,0.92], avatar2:[1536,0.92], produit:[2048,0.95], vetement:[1536,0.9], vetement2:[1536,0.9], decor:[1280,0.88] };
 
 function escAttr(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
@@ -1403,6 +1483,21 @@ async function handleUpload(type,input){
 // ═══════════════════════════════════════════════════
 // ANALYSE DU PRODUIT (texte exact de l'emballage)
 // ═══════════════════════════════════════════════════
+// Tenue : par défaut, l'avatar GARDE les vêtements de sa photo.
+// Exceptions : photo de tenue fournie, tenue exigée par le récit (storyboard/B-roll), ou précision explicite.
+function buildOutfitLock(specificOutfit,direction){
+  if(duoActive()){
+    if(specificOutfit&&!uploads.vetement&&!uploads.vetement2)return 'OUTFIT FOR THIS SCENE ONLY (required by the story): both people wear '+specificOutfit+'. Keep each person\'s face and identity.';
+    const l1=uploads.vetement?'PERSON 1 wears exactly the garment shown in outfit reference 1.':'PERSON 1 keeps EXACTLY the same clothes as in person reference 1.';
+    const l2=uploads.vetement2?'PERSON 2 wears exactly the garment shown in outfit reference 2.':'PERSON 2 keeps EXACTLY the same clothes as in person reference 2.';
+    return 'OUTFIT LOCKED — '+l1+' '+l2+' NEVER change, add, remove or restyle any other clothing'+(direction?', unless the DIRECTION explicitly specifies different clothing':'')+'.';
+  }
+  if(uploads.vetement)return 'OUTFIT LOCKED — the person wears exactly the garment shown in the outfit reference image, replacing the clothes of the person reference photo.';
+  if(specificOutfit)return 'OUTFIT FOR THIS SCENE ONLY (required by the story): '+specificOutfit+'. Keep the same face and identity as the person reference.';
+  if(!uploads.avatar)return '';
+  return 'OUTFIT LOCKED — the person keeps EXACTLY the same clothes as in the person reference photo: same garments, colors, patterns, fit and accessories. NEVER change, add, remove or restyle any clothing'+(direction?', unless the DIRECTION explicitly specifies different clothing':'')+'.';
+}
+
 function removeUpload(type){
   uploads[type]=null;
   ['zone-','qzone-'].forEach(prefix=>{
@@ -1534,6 +1629,7 @@ function validateStep0(){
   if(!document.getElementById('ctx-produit').value.trim()){showToast('Entre le nom du produit 📦');return;}
   if(!document.getElementById('ctx-type').value){showToast('Choisis le type de contenu');return;}
   if(!selectedFormat){showToast('Choisis un format UGC');return;}
+  if(duoMode&&(!uploads.avatar||!uploads.avatar2)){showToast('Mode duo : charge les deux personnes 👥');return;}
   goToStep(1);
 }
 function validateStep1(){
@@ -1594,9 +1690,12 @@ async function generateImage(prompt, useAvatar=true, lieuB64=null, lieuMime='ima
     avatarMime:uploads.avatar?.mime||'image/jpeg',
     produitB64:useProduit?(uploads.produit?.b64||null):null,produitMime:uploads.produit?.mime||'image/jpeg',
     vetementB64:uploads.vetement?.b64||null,vetementMime:uploads.vetement?.mime||'image/jpeg',
+    avatar2B64:(useAvatar&&duoActive())?(uploads.avatar2?.b64||null):null,avatar2Mime:uploads.avatar2?.mime||'image/jpeg',
+    vetement2B64:duoActive()?(uploads.vetement2?.b64||null):null,vetement2Mime:uploads.vetement2?.mime||'image/jpeg',
     decorB64:lieuB64||null,
     decorMime:lieuMime,
   };
+  if(duoActive()&&!(await proxySupportsDuo()))throw new Error('Le mode duo n\'est pas encore activé pour les images gratuites. Utilise ta clé KIE (accueil → « Utiliser ma clé KIE »).');
   const res=await fetch(`${PROXY_URL}/generate-image`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
   const data=await res.json();
   if(!res.ok){
@@ -1612,7 +1711,7 @@ function buildImagePrompt(scenePrompt){
   if(uploads.produit)locks.push('PRODUCT LOCKED — same packaging, shape, label, colors as product reference photo. Do not invent a product.');
   if(uploads.vetement)locks.push('OUTFIT LOCKED — same garment, colors, style as outfit reference photo.');
   const lockStr=locks.length?locks.join(' ')+'  ':'';
-  return `${scenePrompt} — ${lockStr}Portrait orientation 9:16, shot on iPhone 15 Pro, natural light, authentic UGC look. ${QUALITY_SUFFIX}`;
+  return `${scenePrompt} — ${lockStr}Portrait orientation 9:16, shot on iPhone 17 Pro Max, natural light, authentic UGC look. ${QUALITY_SUFFIX}`;
 }
 
 // ═══════════════════════════════════════════════════
@@ -2141,6 +2240,12 @@ REGLES STRICTES PRODUIT :
 - DANS prompt_image, NE DECRIS JAMAIS l'emballage du produit (couleurs, texte, logo, forme) : ecris seulement "the product from the reference image". L'emballage vient de la photo de reference, jamais de ton imagination.
 - SCENES AVEC PRODUIT : le cadrage doit permettre de LIRE l'etiquette. Produit tenu a hauteur de poitrine ou de visage, face a la camera, etiquette non cachee par les doigts, plan buste/taille ou detail produit. Jamais de plan large ou le produit serait minuscule.
 
+${duoActive()?DUO_SB:''}
+
+TENUE :
+- La personne garde TOUJOURS les memes vetements que sur la photo avatar. Dans prompt_image, NE DECRIS JAMAIS de vetements.
+- Exception uniquement si le contexte de la scene l'exige absolument (ex : reveil au lit = pyjama, douche = serviette, sport = tenue de sport) : renseigne alors "tenue_specifique" (en anglais, courte). Sinon "tenue_specifique" reste vide ("").
+
 RESULTATS DU PRODUIT A RENDRE VISIBLES (coeur du storyboard) :
 Resultats annonces : ${RES.resultats}
 Usage : ${RES.usage}
@@ -2166,12 +2271,12 @@ Structure :
 - Derniere scene : CTA
 
 Retourne UNIQUEMENT ce JSON brut, sans texte avant ni apres, sans backticks :
-{"storyboard":[{"scene":1,"partie":"Hook","titre":"...","plan":"...","cadrage":"...","mode_capture":"...","description":"...","emotion_physique":"description physique precise","etat":"probleme","etat_visuel":"what is physically visible on the person in this state, in English","prompt_image":"prompt anglais ultra-detaille. NO product visible in Hook scenes. Emotion as physical observable behavior. Shot on iPhone 15 Pro, natural light. NO studio look, NO advertising."}]}
+{"storyboard":[{"scene":1,"partie":"Hook","titre":"...","plan":"...","cadrage":"...","mode_capture":"...","description":"...","emotion_physique":"description physique precise","etat":"probleme","etat_visuel":"what is physically visible on the person in this state, in English","tenue_specifique":"","prompt_image":"prompt anglais ultra-detaille. NO product visible in Hook scenes. Emotion as physical observable behavior. Shot on iPhone 17 Pro Max, natural light. NO studio look, NO advertising."}]}
 
 Genere 5 a 7 scenes. Au moins 1 scene "probleme" et les 2 dernieres scenes en etat "resultat".`;
 
   try{
-    const images=[uploads.avatar,uploads.produit,uploads.vetement].filter(Boolean);
+    const images=[uploads.avatar,duoActive()?uploads.avatar2:null,uploads.produit,uploads.vetement,duoActive()?uploads.vetement2:null].filter(Boolean);
     const raw=await callGemini(prompt,images);
     storyboardData=parseJsonRobust(raw);
     if(!storyboardData.storyboard?.length)throw new Error('Storyboard vide');
@@ -2340,11 +2445,12 @@ async function genererScene(index){
     if(produitVisible&&uploads.produit)await ensureProductDesc();
 
     const locks=[];
-    if(uploads.avatar)locks.push('IDENTITY LOCKED — same face, skin tone and facial features as reference. Do not invent a new face. If mirror present, reflection must match the person exactly — no collage effect.');
+    if(uploads.avatar&&duoActive()){locks.push(DUO_IDENTITY);locks.push(DUO_BLOCK);}
+    else if(uploads.avatar)locks.push('IDENTITY LOCKED — same face, skin tone and facial features as reference. Do not invent a new face. If mirror present, reflection must match the person exactly — no collage effect.');
     if(!produitVisible){
       locks.push('NO PRODUCT visible in this scene — person and environment only.');
     }
-    if(uploads.vetement)locks.push('OUTFIT LOCKED — same garment as outfit reference.');
+    {const ol=buildOutfitLock(scene.tenue_specifique||'',direction);if(ol)locks.push(ol);}
     const lockStr=locks.join(' ');
 
     // Etat visible de la scène : AVANT (Hook) / RÉSULTAT (fin) — issu des résultats annoncés du produit
@@ -2355,7 +2461,7 @@ async function genererScene(index){
     const prodBlock=(produitVisible&&uploads.produit)?buildProductDirective(directionProduit,lisible)+' ':'';
 
     const basePrompt=prodBlock+'SCENE: '+scene.prompt_image+directionStr+
-      ` — ${lockStr}${resultVisuel} NO inconsistent mirror reflections. Portrait orientation 9:16, shot on iPhone 15 Pro, natural light, authentic UGC look. ${QUALITY_SUFFIX} NO studio look. NO plants.`;
+      ` — ${lockStr}${resultVisuel} NO inconsistent mirror reflections. Portrait orientation 9:16, shot on iPhone 17 Pro Max, natural light, authentic UGC look. ${QUALITY_SUFFIX} NO studio look. NO plants.`;
 
     // La photo produit n'est envoyée que si le produit doit apparaître
     const ownKey=keyForThisImage();
@@ -2459,6 +2565,7 @@ DECOR : ${decorInfo}
 SCRIPT RESUME : ${scriptResume}
 ${uploads.produit?'PRODUCT LOCKED - meme produit que reference fournie':''}
 ${uploads.avatar?'IDENTITY LOCKED - meme personne que reference fournie':''}
+${duoActive()?DUO_BR:''}
 
 REGLES ABSOLUES :
 1. Les B-rolls ne repetent PAS les plans principaux deja dans le script
@@ -2466,6 +2573,7 @@ REGLES ABSOLUES :
 3. Les 5 B-rolls couvrent differents moments : PROBLEME VECU > FRUSTRATION/QUOTIDIEN > DECOUVERTE > UTILISATION > RESULTAT/NOUVELLE VIE
 4. Jamais 3 B-rolls sur le produit. Chercher des moments de VIE autour du script.
 5. Chaque scene doit sembler vécue, pas demontree.
+8. TENUE : la personne garde TOUJOURS les memes vetements que sur la photo avatar, ne decris jamais de vetements. Exception seulement si le moment l'exige absolument (reveil = pyjama, douche = serviette...) : renseigne tenue_specifique (anglais, court), sinon laisse "".
 7. etat_visuel (anglais) : ce qu'on VOIT physiquement sur la personne ou la zone dans ce plan, deduit UNIQUEMENT des resultats annonces. Pour moment_narratif probleme ou quotidien : l'AVANT visible (l'inverse du resultat). Pour resultat : la TRANSFORMATION evidente, en gros plan sur la zone transformee. N'invente aucun resultat.
 6. Dans prompt_image et photo_depart, NE DECRIS JAMAIS l'emballage (couleurs, texte, logo) : ecris seulement "the product from the reference image". Quand le produit est visible, il est tenu ou pose bien en face de la camera, etiquette non cachee, a distance d'une main ou du visage (jamais minuscule en arriere-plan).
 
@@ -2478,10 +2586,10 @@ Pour chaque B-roll, fournis :
 - prompt_image : prompt anglais ultra-detaille pour la generation image, style UGC authentique, lumiere naturelle, 9:16
 
 Retourne UNIQUEMENT ce JSON brut sans texte avant ni apres :
-{"brolls":[{"nom":"BROLL1_Nom","moment_narratif":"...","description_fr":"...","photo_depart":"description precise en francais","instruction_video":"action courte","etat_visuel":"visible state in English","prompt_image":"prompt anglais detaille"}]}`;
+{"brolls":[{"nom":"BROLL1_Nom","moment_narratif":"...","description_fr":"...","photo_depart":"description precise en francais","instruction_video":"action courte","etat_visuel":"visible state in English","tenue_specifique":"","prompt_image":"prompt anglais detaille"}]}`;
 
   try{
-    const raw=await callGemini(prompt,[uploads.produit,uploads.avatar].filter(Boolean));
+    const raw=await callGemini(prompt,[uploads.produit,uploads.avatar,duoActive()?uploads.avatar2:null].filter(Boolean));
     brollData=parseJsonRobust(raw);
     if(!brollData.brolls?.length)throw new Error('Pas de B-rolls generes');
     renderBroll();
@@ -2559,11 +2667,12 @@ async function genererBrollScene(index){
     if(produitVisible&&uploads.produit)await ensureProductDesc();
 
     const locks=[];
-    if(uploads.avatar)locks.push('IDENTITY LOCKED — same face, skin tone and facial features as reference photo. Never invent a new face. Never create inconsistent reflections in mirrors.');
+    if(uploads.avatar&&duoActive()){locks.push(DUO_IDENTITY);locks.push(DUO_BLOCK);}
+    else if(uploads.avatar)locks.push('IDENTITY LOCKED — same face, skin tone and facial features as reference photo. Never invent a new face. Never create inconsistent reflections in mirrors.');
     if(!produitVisible||!uploads.produit){
       locks.push('NO PRODUCT visible — focus on person, environment, emotion only.');
     }
-    if(uploads.vetement)locks.push('OUTFIT LOCKED — same garment as outfit reference.');
+    {const ol=buildOutfitLock(b.tenue_specifique||'','');if(ol)locks.push(ol);}
 
     // Renforcement résultats visibles (seulement quand le produit est à l'image)
     const momentEtat={probleme:'probleme',quotidien:'probleme',resultat:'resultat'}[(b.moment_narratif||'').toLowerCase()]||'';
@@ -2571,7 +2680,7 @@ async function genererBrollScene(index){
 
     const lockStr=locks.join(' ');
     const prodBlock=(produitVisible&&uploads.produit)?buildProductDirective(directionProduit,lisible)+' ':'';
-    const finalPromptBroll=`${prodBlock}SCENE: ${b.prompt_image} — ${lockStr}${resultatsVisibles} Portrait orientation 9:16, shot on iPhone 15 Pro, natural light, authentic UGC look. ${QUALITY_SUFFIX} NO studio look. NO plants. NO inconsistent mirror reflections.`;
+    const finalPromptBroll=`${prodBlock}SCENE: ${b.prompt_image} — ${lockStr}${resultatsVisibles} Portrait orientation 9:16, shot on iPhone 17 Pro Max, natural light, authentic UGC look. ${QUALITY_SUFFIX} NO studio look. NO plants. NO inconsistent mirror reflections.`;
 
     const ownKey=keyForThisImage();
     const imgData=await generateImage(finalPromptBroll, true, b.lieu_b64||null, b.lieu_mime||'image/jpeg', produitVisible, ownKey);

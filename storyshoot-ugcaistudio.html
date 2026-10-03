@@ -104,9 +104,12 @@ select.field option{background:var(--plum-700)}
 .upload-icon{font-size:22px;margin-bottom:6px}
 .upload-label{font-size:11px;font-weight:600;color:var(--text-mid);margin-bottom:3px}
 .upload-hint{font-size:10px;color:var(--text-muted)}
-.upload-preview{position:absolute;inset:0;object-fit:cover;width:100%;height:100%;border-radius:calc(var(--radius-md) - 2px);opacity:0.7}
-.upload-preview-overlay{position:absolute;inset:0;background:rgba(14,8,18,0.5);display:flex;align-items:center;justify-content:center;border-radius:calc(var(--radius-md) - 2px)}
+.upload-preview{pointer-events:none;position:absolute;inset:0;object-fit:cover;width:100%;height:100%;border-radius:calc(var(--radius-md) - 2px);opacity:0.7}
+.upload-preview-overlay{pointer-events:none;position:absolute;inset:0;background:rgba(14,8,18,0.5);display:flex;align-items:center;justify-content:center;border-radius:calc(var(--radius-md) - 2px)}
 .upload-check{width:28px;height:28px;background:var(--violet-400);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px}
+
+.upload-remove{position:absolute;top:6px;right:6px;z-index:5;width:26px;height:26px;border-radius:50%;background:rgba(14,8,18,0.88);border:1px solid rgba(255,255,255,0.4);color:#fff;font-size:12px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
+.upload-remove:hover{background:var(--rose-400);border-color:var(--rose-400)}
 
 /* FORMAT CHIPS */
 .format-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
@@ -309,7 +312,7 @@ select.field option{background:var(--plum-700)}
       <div class="quota-logo">Story<span>Shoot</span></div>
       <div class="quota-track"><div class="quota-fill" id="quota-fill" style="width:100%"></div></div>
       <div class="quota-text" id="quota-text"><strong>10</strong> / 10 photos</div>
-      <button class="btn-ghost" style="padding:4px 10px;font-size:11px;white-space:nowrap" onclick="showScreen('intro')" title="Retour à l'accueil">🏠 Accueil</button>
+      <button class="btn-ghost" id="btn-accueil" style="padding:4px 10px;font-size:11px;white-space:nowrap" onclick="showScreen('intro')" title="Retour à l'accueil">🏠 Accueil</button>
       <button class="btn-ghost" style="padding:4px 10px;font-size:11px;white-space:nowrap" onclick="openKeyModal()" title="Utiliser ma propre clé Google AI Studio">🔑 Ma clé</button>
       <div class="quota-user" id="quota-user">●</div>
     </div>
@@ -337,6 +340,7 @@ select.field option{background:var(--plum-700)}
 
   <!-- ══════════ CRÉATION RAPIDE ══════════ -->
   <div class="app-main" id="quick-main" style="display:none">
+    <div style="margin-bottom:18px"><button class="btn-ghost" onclick="showScreen('intro')">← Retour à l'accueil</button></div>
     <div class="app-hero">
       <div class="hero-eyebrow">⚡ Création rapide</div>
       <h1 class="hero-title">Une scène, <em>un clic</em></h1>
@@ -437,6 +441,7 @@ select.field option{background:var(--plum-700)}
          STEP 0 — CONTEXTE
     ══════════════════════════════════ -->
     <div id="step-0">
+      <div style="margin-bottom:18px"><button class="btn-ghost" onclick="showScreen('intro')">← Retour à l'accueil</button></div>
       <div class="app-hero">
         <div class="hero-eyebrow">UGC AI Studio — StoryShoot</div>
         <h1 class="hero-title">Crée du contenu UGC<br><em>qui fait vraiment vendre</em></h1>
@@ -452,7 +457,7 @@ select.field option{background:var(--plum-700)}
               <input type="file" id="avatar-file" accept="image/*" onchange="handleUpload('avatar',this)">
               <div class="upload-icon">👤</div>
               <div class="upload-label">Avatar IA</div>
-              <div class="upload-hint">Photo référence</div>
+              <div class="upload-hint">Photo référence · clique pour changer</div>
             </div>
             <div class="upload-zone" id="zone-produit">
               <input type="file" id="produit-file" accept="image/*" onchange="handleUpload('produit',this)">
@@ -517,7 +522,8 @@ select.field option{background:var(--plum-700)}
         </div>
       </div>
 
-      <div style="display:flex;justify-content:flex-end;margin-top:8px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;gap:12px">
+        <button class="btn-ghost" onclick="showScreen('intro')">← Accueil</button>
         <button class="btn-gen-all" onclick="validateStep0()">Continuer → Infos marque</button>
       </div>
     </div>
@@ -1041,6 +1047,7 @@ const PLANS_PRODUIT=[
 function showScreen(name){
   const set=(id,on)=>{const e=document.getElementById(id);if(e)e.style.display=on?'block':'none';};
   set('intro',name==='intro');
+  const hb=document.getElementById('btn-accueil');if(hb)hb.style.display=(name==='intro')?'none':'';
   set('quick-main',name==='rapide');
   set('step-nav-wrap',name==='complet');
   set('full-main',name==='complet');
@@ -1367,7 +1374,13 @@ async function handleUpload(type,input){
     zone.querySelector('.upload-preview-overlay')?.remove();
     const img=document.createElement('img');img.className='upload-preview';img.src=p.dataUrl;zone.appendChild(img);
     const ov=document.createElement('div');ov.className='upload-preview-overlay';ov.innerHTML='<div class="upload-check">✓</div>';zone.appendChild(ov);
+    zone.querySelector('.upload-remove')?.remove();
+    const rm=document.createElement('button');
+    rm.type='button';rm.className='upload-remove';rm.title='Retirer cette photo';rm.textContent='✕';
+    rm.onclick=(ev)=>{ev.preventDefault();ev.stopPropagation();removeUpload(type);};
+    zone.appendChild(rm);
   });
+  try{input.value='';}catch(e){}
   // Nouveau produit → on relit son emballage (texte exact) en arrière-plan
   if(type==='produit'){
     productDesc=null;
@@ -1379,6 +1392,26 @@ async function handleUpload(type,input){
 // ═══════════════════════════════════════════════════
 // ANALYSE DU PRODUIT (texte exact de l'emballage)
 // ═══════════════════════════════════════════════════
+function removeUpload(type){
+  uploads[type]=null;
+  ['zone-','qzone-'].forEach(prefix=>{
+    const zone=document.getElementById(prefix+type);if(!zone)return;
+    zone.classList.remove('has-file');
+    zone.querySelector('.upload-preview')?.remove();
+    zone.querySelector('.upload-preview-overlay')?.remove();
+    zone.querySelector('.upload-remove')?.remove();
+  });
+  [type+'-file','q-'+type+'-file'].forEach(id=>{const i=document.getElementById(id);if(i)i.value='';});
+  if(type==='produit'){
+    productDesc=null;productDescPromise=null;
+    ['produit-texte','q-produit-texte'].forEach(id=>{
+      const t=document.getElementById(id);if(t)t.value='';
+      const b=document.getElementById(id+'-block');if(b)b.style.display='none';
+    });
+  }
+  showToast('Photo retirée');
+}
+
 async function analyserProduit(){
   if(!uploads.produit)return null;
   try{
@@ -1389,6 +1422,7 @@ Every piece of text printed on the packaging, one line per printed line, transcr
 LOOK:
 Product type, shape and proportions, packaging colors and materials, cap type, logo and illustrations with their positions. Maximum 60 words, in English.`,
       [uploads.produit]);
+    if(!uploads.produit)return null;
     const m=(raw||'').match(/TEXT:\s*([\s\S]*?)\s*LOOK:\s*([\s\S]*)/i);
     let txt='',look='';
     if(m){txt=m[1].trim();look=m[2].trim();}else{look=(raw||'').trim();}
